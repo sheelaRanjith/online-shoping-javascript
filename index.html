@@ -7,22 +7,20 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body data-page="home">
-  <div id="loading-overlay" class="loading-overlay">
-    <div class="spinner"></div>
-  </div>
-
   <header class="site-header">
     <nav class="navbar container">
       <a href="index.html" class="logo">Nova<span>Cart</span></a>
-      <div class="search-wrap">
-        <input type="text" id="global-search" placeholder="Search products..." aria-label="Search products" />
+      <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
+      <div class="nav-menu" id="nav-menu">
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="contact.html">Contact</a>
+        <a href="orders.html">Orders</a>
+        <a href="auth.html">Login</a>
       </div>
       <div class="nav-actions">
-        <a href="products.html" class="btn btn-ghost">Shop</a>
-        <a href="auth.html" class="btn btn-ghost">Login</a>
-        <a href="cart.html" class="cart-link" aria-label="Cart">
-          🛒 <span id="cart-count" class="badge">0</span>
-        </a>
+        <input type="text" id="global-search" placeholder="Search products..." aria-label="Search products" />
+        <a href="cart.html" class="cart-link" aria-label="Cart">Cart <span id="cart-count" class="badge">0</span></a>
       </div>
     </nav>
   </header>
@@ -30,26 +28,24 @@
   <main>
     <section class="hero">
       <div class="container hero-content">
-        <div>
-          <p class="eyebrow">NEW COLLECTION 2026</p>
-          <h1>Upgrade your style with premium picks.</h1>
-          <p>Discover fashion, electronics, and lifestyle essentials with fast delivery and secure checkout.</p>
-          <a href="products.html" class="btn btn-primary">Shop Now</a>
-        </div>
+        <p class="eyebrow">WELCOME TO NOVACART</p>
+        <h1>Shop smarter with clean design and trusted deals.</h1>
+        <p>Browse premium fashion, electronics, and home essentials in a lightweight, professional shopping experience.</p>
+        <a class="btn btn-primary" href="products.html">Shop Now</a>
       </div>
     </section>
 
     <section class="section container">
       <div class="section-header">
         <h2>Featured Products</h2>
-        <a href="products.html">View all</a>
+        <a href="products.html" class="text-link">See all products</a>
       </div>
       <div id="featured-products" class="product-grid"></div>
     </section>
 
     <section class="section container">
       <div class="section-header">
-        <h2>Shop by Category</h2>
+        <h2>Popular Categories</h2>
       </div>
       <div class="category-grid">
         <a href="products.html?category=Men" class="category-card">Men</a>
@@ -64,9 +60,10 @@
     <div class="container footer-grid">
       <p>© 2026 NovaCart. All rights reserved.</p>
       <div class="footer-links">
-        <a href="#">About</a>
-        <a href="#">Contact</a>
-        <a href="#">Privacy Policy</a>
+        <a href="contact.html">About</a>
+        <a href="contact.html">Contact</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms</a>
       </div>
     </div>
   </footer>

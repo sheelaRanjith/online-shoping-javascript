@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NovaCart | Products</title>
+  <title>NovaCart | Terms & Conditions</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body data-page="products">
+<body data-page="content">
   <header class="site-header">
     <nav class="navbar container">
       <a href="index.html" class="logo">Nova<span>Cart</span></a>
@@ -19,28 +19,21 @@
         <a href="auth.html">Login</a>
       </div>
       <div class="nav-actions">
-        <input type="text" id="product-search" placeholder="Search products..." aria-label="Search products" />
         <a href="cart.html" class="cart-link" aria-label="Cart">Cart <span id="cart-count" class="badge">0</span></a>
       </div>
     </nav>
   </header>
 
-  <main class="container section">
-    <div class="section-header"><h1>Products</h1></div>
-
-    <div class="filters">
-      <select id="category-filter">
-        <option value="All">All Categories</option>
-      </select>
-      <select id="price-filter">
-        <option value="all">All Prices</option>
-        <option value="0-50">$0 - $50</option>
-        <option value="51-100">$51 - $100</option>
-        <option value="101-9999">$101+</option>
-      </select>
-    </div>
-
-    <div id="products-grid" class="product-grid"></div>
+  <main class="container section legal-content">
+    <h1>Terms & Conditions</h1>
+    <h2>Use of Service</h2>
+    <p>By using this website, you agree to use the platform responsibly and avoid misuse of services.</p>
+    <h2>Orders & Payments</h2>
+    <p>Orders are confirmed after checkout. Pricing and availability may vary based on catalog updates.</p>
+    <h2>Returns</h2>
+    <p>Return and replacement policies are defined per product and seller guidelines.</p>
+    <h2>Liability</h2>
+    <p>NovaCart is not responsible for damages caused by misuse of products or incorrect customer data submission.</p>
   </main>
 
   <footer class="site-footer">

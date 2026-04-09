@@ -1,10 +1,4 @@
-/*
-  NovaCart Frontend Store
-  - Handles product rendering
-  - Cart management with localStorage
-  - Login/signup with localStorage
-  - Page-specific behavior
-*/
+/* NovaCart - Lightweight shopping frontend */
 
 const PRODUCTS = [
   { id: 1, name: "Men's Urban Jacket", category: "Men", price: 89, rating: 4.6, image: "https://images.unsplash.com/photo-1593032465171-8bd6f71f5076?auto=format&fit=crop&w=900&q=80", description: "Lightweight premium jacket for everyday comfort and style." },
@@ -18,61 +12,50 @@ const PRODUCTS = [
 ];
 
 const storage = {
-  getCart() {
-    return JSON.parse(localStorage.getItem("novacart_cart") || "[]");
-  },
-  setCart(cart) {
-    localStorage.setItem("novacart_cart", JSON.stringify(cart));
-  },
-  getUsers() {
-    return JSON.parse(localStorage.getItem("novacart_users") || "[]");
-  },
-  setUsers(users) {
-    localStorage.setItem("novacart_users", JSON.stringify(users));
-  },
-  setCurrentUser(user) {
-    localStorage.setItem("novacart_current_user", JSON.stringify(user));
-  }
+  getCart: () => JSON.parse(localStorage.getItem("novacart_cart") || "[]"),
+  setCart: (cart) => localStorage.setItem("novacart_cart", JSON.stringify(cart)),
+  getUsers: () => JSON.parse(localStorage.getItem("novacart_users") || "[]"),
+  setUsers: (users) => localStorage.setItem("novacart_users", JSON.stringify(users)),
+  setCurrentUser: (user) => localStorage.setItem("novacart_current_user", JSON.stringify(user)),
+  getOrders: () => JSON.parse(localStorage.getItem("novacart_orders") || "[]"),
+  setOrders: (orders) => localStorage.setItem("novacart_orders", JSON.stringify(orders))
 };
 
+const $ = (selector) => document.querySelector(selector);
+
 function showToast(message) {
-  const toast = document.getElementById("toast");
+  const toast = $("#toast");
   if (!toast) return;
   toast.textContent = message;
   toast.classList.add("show");
   setTimeout(() => toast.classList.remove("show"), 1800);
 }
 
-function hideLoader() {
-  const loader = document.getElementById("loading-overlay");
-  if (loader) {
-    setTimeout(() => loader.classList.add("hidden"), 350);
-  }
+function toggleMenu() {
+  const button = $("#menu-toggle");
+  const menu = $("#nav-menu");
+  if (!button || !menu) return;
+  button.addEventListener("click", () => menu.classList.toggle("open"));
 }
 
 function updateCartCount() {
-  const countEl = document.getElementById("cart-count");
+  const countEl = $("#cart-count");
   if (!countEl) return;
-  const totalItems = storage.getCart().reduce((sum, item) => sum + item.qty, 0);
-  countEl.textContent = String(totalItems);
+  countEl.textContent = storage.getCart().reduce((sum, item) => sum + item.qty, 0);
 }
 
 function addToCart(productId, qty = 1) {
   const cart = storage.getCart();
   const existing = cart.find(item => item.id === productId);
-  if (existing) {
-    existing.qty += qty;
-  } else {
-    cart.push({ id: productId, qty });
-  }
+  if (existing) existing.qty += qty;
+  else cart.push({ id: productId, qty });
   storage.setCart(cart);
   updateCartCount();
-  showToast("Added to Cart");
+  showToast("Added to cart");
 }
 
 function removeFromCart(productId) {
-  const next = storage.getCart().filter(item => item.id !== productId);
-  storage.setCart(next);
+  storage.setCart(storage.getCart().filter(item => item.id !== productId));
   renderCartPage();
   renderCheckoutSummary();
   updateCartCount();
@@ -91,7 +74,7 @@ function updateQuantity(productId, qty) {
   updateCartCount();
 }
 
-function productCard(product) {
+function cardTemplate(product) {
   return `
     <article class="product-card">
       <a href="product.html?id=${product.id}"><img src="${product.image}" alt="${product.name}" /></a>
@@ -109,7 +92,7 @@ function filterProducts({ search = "", category = "All", priceRange = "all" }) {
   const query = search.trim().toLowerCase();
   return PRODUCTS.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(query);
-    const matchesCategory = category === "All" || product.category === category;
+    const matchesCategory = category === "All" || category === product.category;
     const [min, max] = priceRange === "all" ? [0, Number.POSITIVE_INFINITY] : priceRange.split("-").map(Number);
     const matchesPrice = product.price >= min && product.price <= max;
     return matchesSearch && matchesCategory && matchesPrice;
@@ -117,65 +100,59 @@ function filterProducts({ search = "", category = "All", priceRange = "all" }) {
 }
 
 function renderHomePage() {
-  const container = document.getElementById("featured-products");
-  if (!container) return;
-  container.innerHTML = PRODUCTS.slice(0, 4).map(productCard).join("");
+  const featured = $("#featured-products");
+  if (featured) featured.innerHTML = PRODUCTS.slice(0, 4).map(cardTemplate).join("");
 
-  const globalSearch = document.getElementById("global-search");
-  if (globalSearch) {
-    globalSearch.addEventListener("keydown", event => {
-      if (event.key === "Enter") {
-        window.location.href = `products.html?search=${encodeURIComponent(globalSearch.value.trim())}`;
-      }
-    });
-  }
+  const search = $("#global-search");
+  search?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      window.location.href = `products.html?search=${encodeURIComponent(search.value.trim())}`;
+    }
+  });
 }
 
 function renderProductsPage() {
-  const grid = document.getElementById("products-grid");
+  const grid = $("#products-grid");
   if (!grid) return;
 
-  const categoryFilter = document.getElementById("category-filter");
-  const priceFilter = document.getElementById("price-filter");
-  const searchInput = document.getElementById("product-search");
+  const category = $("#category-filter");
+  const price = $("#price-filter");
+  const search = $("#product-search");
 
-  const categories = [...new Set(PRODUCTS.map(item => item.category))];
-  categories.forEach(category => {
+  [...new Set(PRODUCTS.map(item => item.category))].forEach((cat) => {
     const option = document.createElement("option");
-    option.value = category;
-    option.textContent = category;
-    categoryFilter?.append(option);
+    option.value = cat;
+    option.textContent = cat;
+    category?.append(option);
   });
 
   const params = new URLSearchParams(window.location.search);
-  const urlCategory = params.get("category") || "All";
-  const urlSearch = params.get("search") || "";
-  if (categoryFilter) categoryFilter.value = urlCategory;
-  if (searchInput) searchInput.value = urlSearch;
+  if (category) category.value = params.get("category") || "All";
+  if (search) search.value = params.get("search") || "";
 
   const draw = () => {
-    const products = filterProducts({
-      search: searchInput?.value || "",
-      category: categoryFilter?.value || "All",
-      priceRange: priceFilter?.value || "all"
+    const results = filterProducts({
+      search: search?.value || "",
+      category: category?.value || "All",
+      priceRange: price?.value || "all"
     });
 
-    grid.innerHTML = products.length
-      ? products.map(productCard).join("")
-      : '<p class="muted">No products found. Try another filter.</p>';
+    grid.innerHTML = results.length
+      ? results.map(cardTemplate).join("")
+      : '<p class="muted">No products found for this filter.</p>';
   };
 
-  [categoryFilter, priceFilter].forEach(control => control?.addEventListener("change", draw));
-  searchInput?.addEventListener("input", draw);
+  category?.addEventListener("change", draw);
+  price?.addEventListener("change", draw);
+  search?.addEventListener("input", draw);
   draw();
 }
 
 function renderProductDetailsPage() {
-  const container = document.getElementById("product-details");
+  const container = $("#product-details");
   if (!container) return;
 
-  const params = new URLSearchParams(window.location.search);
-  const id = Number(params.get("id"));
+  const id = Number(new URLSearchParams(window.location.search).get("id"));
   const product = PRODUCTS.find(item => item.id === id);
 
   if (!product) {
@@ -191,33 +168,39 @@ function renderProductDetailsPage() {
       <p class="muted">${product.description}</p>
       <p><strong>Rating:</strong> ⭐ ${product.rating}</p>
       <p class="price">$${product.price.toFixed(2)}</p>
-
       <div class="qty-control">
         <button id="qty-minus">−</button>
         <span id="qty-value">1</span>
         <button id="qty-plus">+</button>
       </div>
-      <br />
       <button id="add-details-cart" class="btn btn-primary">Add to Cart</button>
     </div>
   `;
 
   let qty = 1;
-  const qtyValue = document.getElementById("qty-value");
-  document.getElementById("qty-minus")?.addEventListener("click", () => {
+  const qtyValue = $("#qty-value");
+  $("#qty-minus")?.addEventListener("click", () => {
     qty = Math.max(1, qty - 1);
     if (qtyValue) qtyValue.textContent = String(qty);
   });
-  document.getElementById("qty-plus")?.addEventListener("click", () => {
+  $("#qty-plus")?.addEventListener("click", () => {
     qty += 1;
     if (qtyValue) qtyValue.textContent = String(qty);
   });
-  document.getElementById("add-details-cart")?.addEventListener("click", () => addToCart(product.id, qty));
+  $("#add-details-cart")?.addEventListener("click", () => addToCart(product.id, qty));
 }
 
-function cartLineItem(item) {
-  const product = PRODUCTS.find(p => p.id === item.id);
+function cartTotal(cart) {
+  return cart.reduce((sum, item) => {
+    const product = PRODUCTS.find(entry => entry.id === item.id);
+    return sum + (product ? product.price * item.qty : 0);
+  }, 0);
+}
+
+function cartItemTemplate(item) {
+  const product = PRODUCTS.find(entry => entry.id === item.id);
   if (!product) return "";
+
   return `
     <article class="cart-item">
       <img src="${product.image}" alt="${product.name}" />
@@ -232,41 +215,33 @@ function cartLineItem(item) {
       </div>
       <div>
         <p class="price">$${(product.price * item.qty).toFixed(2)}</p>
-        <button class="btn btn-ghost" onclick="removeFromCart(${product.id})">Remove</button>
+        <button class="btn" onclick="removeFromCart(${product.id})">Remove</button>
       </div>
     </article>
   `;
 }
 
-function cartTotal(cart) {
-  return cart.reduce((sum, item) => {
-    const product = PRODUCTS.find(p => p.id === item.id);
-    return sum + (product ? product.price * item.qty : 0);
-  }, 0);
-}
-
 function renderCartPage() {
-  const list = document.getElementById("cart-items");
-  const totalEl = document.getElementById("cart-total");
-  if (!list || !totalEl) return;
+  const list = $("#cart-items");
+  const total = $("#cart-total");
+  if (!list || !total) return;
 
   const cart = storage.getCart();
   list.innerHTML = cart.length
-    ? cart.map(cartLineItem).join("")
-    : '<p class="muted">Your cart is empty. <a href="products.html">Start shopping</a>.</p>';
-
-  totalEl.textContent = cartTotal(cart).toFixed(2);
+    ? cart.map(cartItemTemplate).join("")
+    : '<p class="muted">Your cart is empty. <a class="text-link" href="products.html">Start shopping</a>.</p>';
+  total.textContent = cartTotal(cart).toFixed(2);
 }
 
 function renderCheckoutSummary() {
-  const summary = document.getElementById("checkout-summary");
-  const totalEl = document.getElementById("checkout-total");
-  if (!summary || !totalEl) return;
+  const summary = $("#checkout-summary");
+  const total = $("#checkout-total");
+  if (!summary || !total) return;
 
   const cart = storage.getCart();
   summary.innerHTML = cart.length
     ? cart.map(item => {
-        const product = PRODUCTS.find(p => p.id === item.id);
+        const product = PRODUCTS.find(entry => entry.id === item.id);
         if (!product) return "";
         return `
           <article class="summary-item">
@@ -281,85 +256,136 @@ function renderCheckoutSummary() {
       }).join("")
     : '<p class="muted">No items in cart.</p>';
 
-  totalEl.textContent = cartTotal(cart).toFixed(2);
+  total.textContent = cartTotal(cart).toFixed(2);
 }
 
 function handleCheckout() {
-  const form = document.getElementById("checkout-form");
+  const form = $("#checkout-form");
   if (!form) return;
 
-  form.addEventListener("submit", event => {
+  form.addEventListener("submit", (event) => {
     event.preventDefault();
-    const name = document.getElementById("checkout-name")?.value.trim();
-    const address = document.getElementById("checkout-address")?.value.trim();
-    const phone = document.getElementById("checkout-phone")?.value.trim();
-    const payment = document.getElementById("checkout-payment")?.value;
+    const name = $("#checkout-name")?.value.trim();
+    const address = $("#checkout-address")?.value.trim();
+    const phone = $("#checkout-phone")?.value.trim();
+    const payment = $("#checkout-payment")?.value;
 
     if (!name || !address || !phone || !payment) {
-      showToast("Please complete all checkout fields.");
+      showToast("Please fill all checkout fields.");
       return;
     }
 
-    showToast("Order placed successfully!");
+    const cart = storage.getCart();
+    if (!cart.length) {
+      showToast("Your cart is empty.");
+      return;
+    }
+
+    const orderDate = new Date().toISOString().slice(0, 10);
+    const orders = storage.getOrders();
+    cart.forEach(item => {
+      const product = PRODUCTS.find(entry => entry.id === item.id);
+      if (!product) return;
+      orders.push({ product: product.name, price: (product.price * item.qty).toFixed(2), date: orderDate, status: "Confirmed" });
+    });
+    storage.setOrders(orders);
+
     storage.setCart([]);
     updateCartCount();
-    form.reset();
     renderCheckoutSummary();
+    form.reset();
+    showToast("Order placed successfully");
   });
 }
 
+function renderOrdersPage() {
+  const list = $("#orders-list");
+  if (!list) return;
+
+  const orders = storage.getOrders();
+  if (!orders.length) {
+    list.innerHTML = '<tr><td colspan="4" class="muted">No orders yet. Place one from checkout.</td></tr>';
+    return;
+  }
+
+  list.innerHTML = orders.map(order => `
+    <tr>
+      <td>${order.product}</td>
+      <td>$${order.price}</td>
+      <td>${order.date}</td>
+      <td><span class="status">${order.status}</span></td>
+    </tr>
+  `).join("");
+}
+
 function handleAuth() {
-  const signup = document.getElementById("signup-form");
-  const login = document.getElementById("login-form");
+  const signup = $("#signup-form");
+  const login = $("#login-form");
 
-  signup?.addEventListener("submit", event => {
+  signup?.addEventListener("submit", (event) => {
     event.preventDefault();
-
-    const name = document.getElementById("signup-name")?.value.trim();
-    const email = document.getElementById("signup-email")?.value.trim().toLowerCase();
-    const password = document.getElementById("signup-password")?.value;
+    const name = $("#signup-name")?.value.trim();
+    const email = $("#signup-email")?.value.trim().toLowerCase();
+    const password = $("#signup-password")?.value;
 
     if (!name || !email || !password || password.length < 6) {
-      showToast("Please fill valid signup details.");
+      showToast("Use valid signup details.");
       return;
     }
 
     const users = storage.getUsers();
     if (users.some(user => user.email === email)) {
-      showToast("Email already registered.");
+      showToast("Email already exists.");
       return;
     }
 
     users.push({ name, email, password });
     storage.setUsers(users);
-    showToast("Signup successful. You can now login.");
     signup.reset();
+    showToast("Signup successful");
   });
 
-  login?.addEventListener("submit", event => {
+  login?.addEventListener("submit", (event) => {
     event.preventDefault();
+    const email = $("#login-email")?.value.trim().toLowerCase();
+    const password = $("#login-password")?.value;
 
-    const email = document.getElementById("login-email")?.value.trim().toLowerCase();
-    const password = document.getElementById("login-password")?.value;
-
-    const users = storage.getUsers();
-    const user = users.find(entry => entry.email === email && entry.password === password);
+    const user = storage.getUsers().find(entry => entry.email === email && entry.password === password);
     if (!user) {
-      showToast("Invalid email or password.");
+      showToast("Invalid login credentials");
       return;
     }
 
     storage.setCurrentUser({ name: user.name, email: user.email });
-    showToast(`Welcome back, ${user.name}!`);
     login.reset();
+    showToast(`Welcome back, ${user.name}`);
+  });
+}
+
+function handleContactForm() {
+  const form = $("#contact-form");
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    form.reset();
+    showToast("Thanks! We will contact you soon.");
+  });
+}
+
+function bindGlobalSearch() {
+  const search = $("#global-search");
+  search?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      window.location.href = `products.html?search=${encodeURIComponent(search.value.trim())}`;
+    }
   });
 }
 
 function initPage() {
-  const page = document.body.dataset.page;
+  toggleMenu();
   updateCartCount();
+  bindGlobalSearch();
 
-  switch (page) {
+  switch (document.body.dataset.page) {
     case "home":
       renderHomePage();
       break;
@@ -376,14 +402,18 @@ function initPage() {
       renderCheckoutSummary();
       handleCheckout();
       break;
+    case "orders":
+      renderOrdersPage();
+      break;
     case "auth":
       handleAuth();
+      break;
+    case "contact":
+      handleContactForm();
       break;
     default:
       break;
   }
-
-  hideLoader();
 }
 
 document.addEventListener("DOMContentLoaded", initPage);

@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NovaCart | Products</title>
+  <title>NovaCart | Contact</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body data-page="products">
+<body data-page="contact">
   <header class="site-header">
     <nav class="navbar container">
       <a href="index.html" class="logo">Nova<span>Cart</span></a>
@@ -19,28 +19,22 @@
         <a href="auth.html">Login</a>
       </div>
       <div class="nav-actions">
-        <input type="text" id="product-search" placeholder="Search products..." aria-label="Search products" />
         <a href="cart.html" class="cart-link" aria-label="Cart">Cart <span id="cart-count" class="badge">0</span></a>
       </div>
     </nav>
   </header>
 
-  <main class="container section">
-    <div class="section-header"><h1>Products</h1></div>
-
-    <div class="filters">
-      <select id="category-filter">
-        <option value="All">All Categories</option>
-      </select>
-      <select id="price-filter">
-        <option value="all">All Prices</option>
-        <option value="0-50">$0 - $50</option>
-        <option value="51-100">$51 - $100</option>
-        <option value="101-9999">$101+</option>
-      </select>
-    </div>
-
-    <div id="products-grid" class="product-grid"></div>
+  <main class="container section centered-page">
+    <section class="panel contact-panel">
+      <h1>Contact Us</h1>
+      <p class="muted">We usually reply within 24 hours.</p>
+      <form id="contact-form" class="form-grid">
+        <label>Full Name<input type="text" required /></label>
+        <label>Email<input type="email" required /></label>
+        <label>Message<textarea rows="5" required></textarea></label>
+        <button class="btn btn-primary" type="submit">Send Message</button>
+      </form>
+    </section>
   </main>
 
   <footer class="site-footer">

@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NovaCart | Products</title>
+  <title>NovaCart | Orders</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body data-page="products">
+<body data-page="orders">
   <header class="site-header">
     <nav class="navbar container">
       <a href="index.html" class="logo">Nova<span>Cart</span></a>
@@ -19,28 +19,26 @@
         <a href="auth.html">Login</a>
       </div>
       <div class="nav-actions">
-        <input type="text" id="product-search" placeholder="Search products..." aria-label="Search products" />
         <a href="cart.html" class="cart-link" aria-label="Cart">Cart <span id="cart-count" class="badge">0</span></a>
       </div>
     </nav>
   </header>
 
   <main class="container section">
-    <div class="section-header"><h1>Products</h1></div>
-
-    <div class="filters">
-      <select id="category-filter">
-        <option value="All">All Categories</option>
-      </select>
-      <select id="price-filter">
-        <option value="all">All Prices</option>
-        <option value="0-50">$0 - $50</option>
-        <option value="51-100">$51 - $100</option>
-        <option value="101-9999">$101+</option>
-      </select>
+    <h1>Your Orders</h1>
+    <div class="orders-table-wrap">
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="orders-list"></tbody>
+      </table>
     </div>
-
-    <div id="products-grid" class="product-grid"></div>
   </main>
 
   <footer class="site-footer">
