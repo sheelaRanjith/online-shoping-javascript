@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NovaCart | Cart</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-page="cart">
+  <div id="loading-overlay" class="loading-overlay"><div class="spinner"></div></div>
+
+  <header class="site-header">
+    <nav class="navbar container">
+      <a href="index.html" class="logo">Nova<span>Cart</span></a>
+      <div class="search-wrap">
+        <input type="text" id="global-search" placeholder="Search products..." aria-label="Search products" />
+      </div>
+      <div class="nav-actions">
+        <a href="products.html" class="btn btn-ghost">Products</a>
+        <a href="auth.html" class="btn btn-ghost">Login</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container section">
+    <div class="section-header"><h1>Your Cart</h1></div>
+    <div id="cart-items" class="cart-list"></div>
+    <div class="cart-summary">
+      <h3>Total: $<span id="cart-total">0.00</span></h3>
+      <a href="checkout.html" class="btn btn-primary">Proceed to Checkout</a>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <p>© 2026 NovaCart. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+        <a href="#">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast"></div>
+  <script src="script.js"></script>
+</body>
+</html>
