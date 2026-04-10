@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NovaCart | Home</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-page="home">
+  <header class="site-header">
+    <nav class="navbar container">
+      <a href="index.html" class="logo">Nova<span>Cart</span></a>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
+      <div class="nav-menu" id="nav-menu">
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="contact.html">Contact</a>
+        <a href="orders.html">Orders</a>
+        <a href="auth.html">Login</a>
+      </div>
+      <div class="nav-actions">
+        <input type="text" id="global-search" placeholder="Search products..." aria-label="Search products" />
+        <a href="cart.html" class="cart-link" aria-label="Cart">Cart <span id="cart-count" class="badge">0</span></a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-content">
+        <p class="eyebrow">WELCOME TO NOVACART</p>
+        <h1>Shop smarter with clean design and trusted deals.</h1>
+        <p>Browse premium fashion, electronics, and home essentials in a lightweight, professional shopping experience.</p>
+        <a class="btn btn-primary" href="products.html">Shop Now</a>
+      </div>
+    </section>
+
+    <section class="section container">
+      <div class="section-header">
+        <h2>Featured Products</h2>
+        <a href="products.html" class="text-link">See all products</a>
+      </div>
+      <div id="featured-products" class="product-grid"></div>
+    </section>
+
+    <section class="section container">
+      <div class="section-header">
+        <h2>Popular Categories</h2>
+      </div>
+      <div class="category-grid">
+        <a href="products.html?category=Men" class="category-card">Men</a>
+        <a href="products.html?category=Women" class="category-card">Women</a>
+        <a href="products.html?category=Electronics" class="category-card">Electronics</a>
+        <a href="products.html?category=Home" class="category-card">Home</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <p>© 2026 NovaCart. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="contact.html">About</a>
+        <a href="contact.html">Contact</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms</a>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast"></div>
+  <script src="script.js"></script>
+</body>
+</html>

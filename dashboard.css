@@ -1,0 +1,130 @@
+:root {
+  --bg: #0f172a;
+  --panel: #111c34;
+  --panel-soft: #162544;
+  --text: #eef3ff;
+  --muted: #9eb0d0;
+  --primary: #3b82f6;
+  --success: #22c55e;
+  --border: #2b3b60;
+  --danger: #ef4444;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Inter, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
+
+.dashboard-shell { display: grid; grid-template-columns: 250px 1fr; min-height: 100vh; }
+
+.sidebar {
+  background: #0c1426;
+  border-right: 1px solid var(--border);
+  padding: 1rem;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.sidebar h2 { margin-top: 0; }
+.sidebar nav { display: grid; gap: 0.5rem; }
+
+.side-link {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  text-align: left;
+  padding: 0.65rem 0.8rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.side-link:hover,
+.side-link.active { background: var(--panel-soft); border-color: #46619a; }
+
+.sidebar-toggle {
+  display: none;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+}
+
+.dashboard-main { padding: 1rem 1.2rem; }
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+}
+
+.topbar-right { display: flex; align-items: center; gap: 0.5rem; }
+.icon-pill { background: var(--panel-soft); border: 1px solid var(--border); padding: 0.35rem 0.55rem; border-radius: 10px; }
+
+.section { display: none; margin-top: 1rem; animation: fadeIn 0.25s ease; }
+.section.active { display: block; }
+
+.summary-grid { display: grid; gap: 1rem; grid-template-columns: repeat(3, minmax(150px, 1fr)); }
+.summary-card, .card, .list-item, .total-bar {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+}
+.summary-card p { font-size: 1.6rem; margin: 0.3rem 0 0; color: var(--primary); }
+
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th, .data-table td { border-bottom: 1px solid var(--border); padding: 0.65rem; text-align: left; }
+.status { padding: 0.2rem 0.5rem; border-radius: 999px; font-size: 0.8rem; }
+.status.delivered { background: rgba(34,197,94,.2); color: #9af7b6; }
+.status.pending { background: rgba(245,158,11,.2); color: #fcd78a; }
+
+.list-grid { display: grid; gap: 0.8rem; }
+.list-item { display: grid; grid-template-columns: 70px 1fr auto; gap: 0.8rem; align-items: center; }
+.list-item img { width: 70px; height: 70px; object-fit: cover; border-radius: 8px; }
+
+.btn { border: none; border-radius: 8px; padding: 0.5rem 0.8rem; cursor: pointer; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-success { background: var(--success); color: #fff; }
+.btn-danger { background: var(--danger); color: #fff; }
+
+.qty-wrap { display: inline-flex; gap: 0.4rem; align-items: center; }
+.qty-wrap button { border: 1px solid var(--border); background: var(--panel-soft); color: var(--text); border-radius: 6px; width: 28px; height: 28px; }
+
+.form-grid { display: grid; gap: 0.8rem; max-width: 620px; }
+.form-grid input, .form-grid textarea {
+  width: 100%;
+  background: var(--panel-soft);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+}
+
+.toast {
+  position: fixed; right: 15px; bottom: 15px;
+  background: #0b1221; border: 1px solid var(--border);
+  border-radius: 10px; padding: 0.7rem 0.9rem;
+  opacity: 0; transform: translateY(10px); transition: 0.2s;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 900px) {
+  .dashboard-shell { grid-template-columns: 1fr; }
+  .sidebar { position: static; height: auto; }
+  .sidebar-toggle { display: inline-block; margin-bottom: 0.8rem; }
+  .sidebar nav { display: none; }
+  .sidebar.open nav { display: grid; }
+  .summary-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .list-item { grid-template-columns: 1fr; }
+  .data-table th:nth-child(5), .data-table td:nth-child(5) { display: none; }
+}

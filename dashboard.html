@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NovaCart | User Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body>
+  <div class="dashboard-shell">
+    <aside class="sidebar" id="sidebar">
+      <h2>NovaCart</h2>
+      <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
+      <nav>
+        <button class="side-link active" data-section="home">Dashboard</button>
+        <button class="side-link" data-section="orders">My Orders</button>
+        <button class="side-link" data-section="cart">Cart</button>
+        <button class="side-link" data-section="wishlist">Wishlist</button>
+        <button class="side-link" data-section="profile">Profile</button>
+        <button class="side-link" id="logout-btn">Logout</button>
+      </nav>
+    </aside>
+
+    <main class="dashboard-main">
+      <header class="topbar">
+        <div></div>
+        <div class="topbar-right">
+          <span id="top-user-name">User</span>
+          <span class="icon-pill">👤</span>
+          <span class="icon-pill">🔔</span>
+        </div>
+      </header>
+
+      <section id="section-home" class="section active">
+        <h1 id="welcome-msg">Welcome back!</h1>
+        <div class="summary-grid">
+          <article class="summary-card">
+            <h3>Total Orders</h3>
+            <p id="total-orders">0</p>
+          </article>
+          <article class="summary-card">
+            <h3>Cart Items</h3>
+            <p id="total-cart-items">0</p>
+          </article>
+          <article class="summary-card">
+            <h3>Wishlist Items</h3>
+            <p id="total-wishlist-items">0</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="section-orders" class="section">
+        <h2>My Orders</h2>
+        <div class="card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Product Name</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="dashboard-orders"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="section-cart" class="section">
+        <h2>Cart</h2>
+        <div id="dashboard-cart" class="list-grid"></div>
+        <div class="total-bar">Total: $<span id="dashboard-cart-total">0.00</span></div>
+      </section>
+
+      <section id="section-wishlist" class="section">
+        <h2>Wishlist</h2>
+        <div id="dashboard-wishlist" class="list-grid"></div>
+      </section>
+
+      <section id="section-profile" class="section">
+        <h2>Profile</h2>
+        <form id="profile-form" class="card form-grid">
+          <label>Name<input id="profile-name" type="text" required /></label>
+          <label>Email<input id="profile-email" type="email" required /></label>
+          <label>Phone<input id="profile-phone" type="text" /></label>
+          <label>Address<textarea id="profile-address" rows="3"></textarea></label>
+          <button type="submit" class="btn btn-primary">Save Profile</button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="dashboard.js"></script>
+</body>
+</html>
