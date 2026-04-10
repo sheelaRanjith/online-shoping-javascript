@@ -246,6 +246,13 @@ a { text-decoration: none; color: inherit; }
   object-fit: cover;
 }
 
+
+.detail-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
 .qty-control {
   display: inline-flex;
   align-items: center;

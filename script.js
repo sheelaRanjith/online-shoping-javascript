@@ -1,4 +1,4 @@
-/* NovaCart - Lightweight shopping frontend */
+/* NovaCart - Shared site logic (light theme pages) */
 
 const PRODUCTS = [
   { id: 1, name: "Men's Urban Jacket", category: "Men", price: 89, rating: 4.6, image: "https://images.unsplash.com/photo-1593032465171-8bd6f71f5076?auto=format&fit=crop&w=900&q=80", description: "Lightweight premium jacket for everyday comfort and style." },
@@ -16,9 +16,12 @@ const storage = {
   setCart: (cart) => localStorage.setItem("novacart_cart", JSON.stringify(cart)),
   getUsers: () => JSON.parse(localStorage.getItem("novacart_users") || "[]"),
   setUsers: (users) => localStorage.setItem("novacart_users", JSON.stringify(users)),
+  getCurrentUser: () => JSON.parse(localStorage.getItem("novacart_current_user") || "null"),
   setCurrentUser: (user) => localStorage.setItem("novacart_current_user", JSON.stringify(user)),
   getOrders: () => JSON.parse(localStorage.getItem("novacart_orders") || "[]"),
-  setOrders: (orders) => localStorage.setItem("novacart_orders", JSON.stringify(orders))
+  setOrders: (orders) => localStorage.setItem("novacart_orders", JSON.stringify(orders)),
+  getWishlist: () => JSON.parse(localStorage.getItem("novacart_wishlist") || "[]"),
+  setWishlist: (wishlist) => localStorage.setItem("novacart_wishlist", JSON.stringify(wishlist))
 };
 
 const $ = (selector) => document.querySelector(selector);
@@ -44,6 +47,16 @@ function updateCartCount() {
   countEl.textContent = storage.getCart().reduce((sum, item) => sum + item.qty, 0);
 }
 
+function updateAuthLinks() {
+  const user = storage.getCurrentUser();
+  document.querySelectorAll('a[href="auth.html"]').forEach((link) => {
+    if (user) {
+      link.href = "dashboard.html";
+      link.textContent = "Profile";
+    }
+  });
+}
+
 function addToCart(productId, qty = 1) {
   const cart = storage.getCart();
   const existing = cart.find(item => item.id === productId);
@@ -52,6 +65,17 @@ function addToCart(productId, qty = 1) {
   storage.setCart(cart);
   updateCartCount();
   showToast("Added to cart");
+}
+
+function addToWishlist(productId) {
+  const wishlist = storage.getWishlist();
+  if (!wishlist.includes(productId)) {
+    wishlist.push(productId);
+    storage.setWishlist(wishlist);
+    showToast("Added to wishlist");
+  } else {
+    showToast("Already in wishlist");
+  }
 }
 
 function removeFromCart(productId) {
@@ -105,9 +129,7 @@ function renderHomePage() {
 
   const search = $("#global-search");
   search?.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-      window.location.href = `products.html?search=${encodeURIComponent(search.value.trim())}`;
-    }
+    if (event.key === "Enter") window.location.href = `products.html?search=${encodeURIComponent(search.value.trim())}`;
   });
 }
 
@@ -137,9 +159,7 @@ function renderProductsPage() {
       priceRange: price?.value || "all"
     });
 
-    grid.innerHTML = results.length
-      ? results.map(cardTemplate).join("")
-      : '<p class="muted">No products found for this filter.</p>';
+    grid.innerHTML = results.length ? results.map(cardTemplate).join("") : '<p class="muted">No products found for this filter.</p>';
   };
 
   category?.addEventListener("change", draw);
@@ -173,7 +193,10 @@ function renderProductDetailsPage() {
         <span id="qty-value">1</span>
         <button id="qty-plus">+</button>
       </div>
-      <button id="add-details-cart" class="btn btn-primary">Add to Cart</button>
+      <div class="detail-actions">
+        <button id="add-details-cart" class="btn btn-primary">Add to Cart</button>
+        <button id="add-details-wishlist" class="btn btn-success">Add to Wishlist</button>
+      </div>
     </div>
   `;
 
@@ -188,6 +211,7 @@ function renderProductDetailsPage() {
     if (qtyValue) qtyValue.textContent = String(qty);
   });
   $("#add-details-cart")?.addEventListener("click", () => addToCart(product.id, qty));
+  $("#add-details-wishlist")?.addEventListener("click", () => addToWishlist(product.id));
 }
 
 function cartTotal(cart) {
@@ -227,9 +251,7 @@ function renderCartPage() {
   if (!list || !total) return;
 
   const cart = storage.getCart();
-  list.innerHTML = cart.length
-    ? cart.map(cartItemTemplate).join("")
-    : '<p class="muted">Your cart is empty. <a class="text-link" href="products.html">Start shopping</a>.</p>';
+  list.innerHTML = cart.length ? cart.map(cartItemTemplate).join("") : '<p class="muted">Your cart is empty. <a class="text-link" href="products.html">Start shopping</a>.</p>';
   total.textContent = cartTotal(cart).toFixed(2);
 }
 
@@ -270,23 +292,23 @@ function handleCheckout() {
     const phone = $("#checkout-phone")?.value.trim();
     const payment = $("#checkout-payment")?.value;
 
-    if (!name || !address || !phone || !payment) {
-      showToast("Please fill all checkout fields.");
-      return;
-    }
+    if (!name || !address || !phone || !payment) return showToast("Please fill all checkout fields.");
 
     const cart = storage.getCart();
-    if (!cart.length) {
-      showToast("Your cart is empty.");
-      return;
-    }
+    if (!cart.length) return showToast("Your cart is empty.");
 
-    const orderDate = new Date().toISOString().slice(0, 10);
     const orders = storage.getOrders();
-    cart.forEach(item => {
+    const orderDate = new Date().toISOString().slice(0, 10);
+    cart.forEach((item, index) => {
       const product = PRODUCTS.find(entry => entry.id === item.id);
       if (!product) return;
-      orders.push({ product: product.name, price: (product.price * item.qty).toFixed(2), date: orderDate, status: "Confirmed" });
+      orders.push({
+        id: `ORD-${Date.now()}-${index + 1}`,
+        product: product.name,
+        price: (product.price * item.qty).toFixed(2),
+        date: orderDate,
+        status: Math.random() > 0.4 ? "Delivered" : "Pending"
+      });
     });
     storage.setOrders(orders);
 
@@ -313,7 +335,7 @@ function renderOrdersPage() {
       <td>${order.product}</td>
       <td>$${order.price}</td>
       <td>${order.date}</td>
-      <td><span class="status">${order.status}</span></td>
+      <td><span class="status">${order.status || "Pending"}</span></td>
     </tr>
   `).join("");
 }
@@ -328,18 +350,12 @@ function handleAuth() {
     const email = $("#signup-email")?.value.trim().toLowerCase();
     const password = $("#signup-password")?.value;
 
-    if (!name || !email || !password || password.length < 6) {
-      showToast("Use valid signup details.");
-      return;
-    }
+    if (!name || !email || !password || password.length < 6) return showToast("Use valid signup details.");
 
     const users = storage.getUsers();
-    if (users.some(user => user.email === email)) {
-      showToast("Email already exists.");
-      return;
-    }
+    if (users.some(user => user.email === email)) return showToast("Email already exists.");
 
-    users.push({ name, email, password });
+    users.push({ name, email, password, phone: "", address: "" });
     storage.setUsers(users);
     signup.reset();
     showToast("Signup successful");
@@ -351,14 +367,12 @@ function handleAuth() {
     const password = $("#login-password")?.value;
 
     const user = storage.getUsers().find(entry => entry.email === email && entry.password === password);
-    if (!user) {
-      showToast("Invalid login credentials");
-      return;
-    }
+    if (!user) return showToast("Invalid login credentials");
 
-    storage.setCurrentUser({ name: user.name, email: user.email });
+    storage.setCurrentUser({ name: user.name, email: user.email, phone: user.phone || "", address: user.address || "" });
     login.reset();
     showToast(`Welcome back, ${user.name}`);
+    setTimeout(() => { window.location.href = "dashboard.html"; }, 500);
   });
 }
 
@@ -374,15 +388,14 @@ function handleContactForm() {
 function bindGlobalSearch() {
   const search = $("#global-search");
   search?.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-      window.location.href = `products.html?search=${encodeURIComponent(search.value.trim())}`;
-    }
+    if (event.key === "Enter") window.location.href = `products.html?search=${encodeURIComponent(search.value.trim())}`;
   });
 }
 
 function initPage() {
   toggleMenu();
   updateCartCount();
+  updateAuthLinks();
   bindGlobalSearch();
 
   switch (document.body.dataset.page) {
